@@ -1,0 +1,82 @@
+Polynomial Division
+
+import java.util.Arrays;
+
+public class Question3 {
+
+    public static int[] polyDiv(int[] dividend, int[] divisor, int[] modPoly) {
+        int[] quotient = new int[dividend.length];
+        int[] tempDividend = Arrays.copyOf(dividend, dividend.length);
+
+        while (degree(tempDividend) >= degree(divisor)) {
+            int degreeDiff = degree(tempDividend) - degree(divisor);
+            int[] temp = new int[degreeDiff + 1];
+            temp[degreeDiff] = 1;
+
+            int[] divisorShifted = polyMult(divisor, temp, modPoly);
+            for (int i = 0; i < dividend.length; i++) {
+                tempDividend[i] ^= divisorShifted[i];
+            }
+            quotient[degreeDiff] = 1;
+        }
+
+        return quotient;
+    }
+
+    public static int[] polyMult(int[] poly1, int[] poly2, int[] modPoly) {
+        int m = poly1.length;
+        int n = poly2.length;
+        int degreeResult = m + n - 2;
+        int[] result = new int[degreeResult + 1];
+
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                result[i + j] ^= poly1[i] * poly2[j];
+            }
+        }
+
+        while (degree(result) >= degree(modPoly)) {
+            int shift = degree(result) - degree(modPoly);
+            for (int i = 0; i < modPoly.length; i++) {
+                result[i + shift] ^= modPoly[i];
+            }
+        }
+
+        return result;
+    }
+
+    public static int degree(int[] poly) {
+        for (int i = poly.length - 1; i >= 0; i--) {
+            if (poly[i] != 0) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public static void main(String[] args) {
+        int[] arr1 = {1, 1, 0, 1, 0, 1, 0, 1, 0}; // x^8 + x^7 + x^5 + x^3 + x
+        int[] arr2 = {0, 0, 0, 0, 0, 1, 1, 1, 1}; // x^3 + x^2 + x + 1
+        int[] modPoly = {1, 0, 1, 1, 0, 0, 0, 1, 1}; // x^8 + x^6 + x^5 + x + 1
+
+        int[] quotient = polyDiv(arr1, arr2, modPoly);
+        System.out.println("Quotient: " + Arrays.toString(quotient));
+
+        int[] arr3 = quotient;
+
+        int[] arr5 = modulus(arr3, modPoly);
+
+        System.out.println("Modulus: " + Arrays.toString(arr5));
+    }
+
+    public static int[] modulus(int[] poly, int[] modPoly) {
+        while (degree(poly) >= degree(modPoly)) {
+            int shift = degree(poly) - degree(modPoly);
+            for (int i = 0; i < modPoly.length; i++) {
+                poly[i + shift] ^= modPoly[i];
+            }
+        }
+
+        return poly;
+    }
+}

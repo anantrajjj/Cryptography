@@ -1,0 +1,35 @@
+Mod
+
+import java.util.Scanner;
+
+public class Question1 {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Enter the base: ");
+        int base = scanner.nextInt();
+        System.out.print("Enter the modulus: ");
+        int modulus = scanner.nextInt();
+
+        int result = ModularValue(modulus, base);
+        System.out.println("The modular value is: " + result);
+
+        scanner.close();
+    }
+    public static int ModularValue(int modulus, int base) {
+        if (modulus <= 0) {
+            throw new IllegalArgumentException("Modulus must be a positive integer");
+        }
+        int result = base % modulus;
+
+        if (result < 0) {
+            result += modulus;
+        }
+        return result;
+    }
+}
+
+
+
+
+

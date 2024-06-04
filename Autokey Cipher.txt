@@ -1,0 +1,81 @@
+Autokey Cipher
+
+import java.util.Scanner;
+public class AutokeyCipher {
+    private static final String ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    private static int indexOf(char c) {
+        for (int i = 0; i < ALPHABET.length(); i++) {
+            if (ALPHABET.charAt(i) == c) {
+                return i;
+            }
+        }
+        return -1; // Character not found in the alphabet
+    }
+    private static int mod(int a, int b) {
+        int result = a % b;
+        if (result < 0) return result + b;
+        return result;
+    }
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Enter the plaintext: ");
+        String msg = scanner.nextLine().toUpperCase();
+
+        System.out.print("Enter the key (a letter or a number): ");
+        String key = scanner.nextLine().toUpperCase();
+
+        // Check if key is a number and convert it to corresponding alphabet character
+        if (isNumeric(key)) {
+            int numericKey = Integer.parseInt(key);
+            if (numericKey >= 0 && numericKey < ALPHABET.length()) {
+                key = "" + ALPHABET.charAt(numericKey);
+            }
+        }
+
+        String enc = autoEncryption(msg, key);
+
+        System.out.println("Plaintext: " + msg);
+        System.out.println("Encrypted: " + enc);
+        System.out.println("Decrypted: " + autoDecryption(enc, key));
+
+        scanner.close();
+    }
+    public static String autoEncryption(String msg, String key) {
+        int len = msg.length();
+        String newKey = key.concat(msg);
+        newKey = newKey.substring(0, newKey.length() - key.length());
+        String encryptMsg = "";
+
+        for (int x = 0; x < len; x++) {
+            int first = indexOf(msg.charAt(x));
+            int second = indexOf(newKey.charAt(x));
+            int total = mod(first + second, 26);
+            encryptMsg += ALPHABET.charAt(total);
+        }
+        return encryptMsg;
+    }
+    public static String autoDecryption(String msg, String key) {
+        String currentKey = key;
+        String decryptMsg = "";
+        for (int x = 0; x < msg.length(); x++) {
+            int get1 = indexOf(msg.charAt(x));
+            int get2 = indexOf(currentKey.charAt(x));
+            int total = mod(get1 - get2, 26);
+            decryptMsg += ALPHABET.charAt(total);
+            currentKey += ALPHABET.charAt(total);
+        }
+        return decryptMsg;
+    }
+    private static boolean isNumeric(String str) {
+        if (str == null || str.isEmpty()) {
+            return false;
+        }
+        for (char c : str.toCharArray()) {
+            if (!Character.isDigit(c)) {
+                return false;
+            }
+        }
+        return true;
+    }
+}

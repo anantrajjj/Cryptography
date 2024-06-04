@@ -1,0 +1,61 @@
+Hill Cipher Decryption 
+
+import java.util.Scanner;
+public class HillCipherDec {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Enter the key matrix (2x2): ");
+        int[][] keyMatrix = new int[2][2];
+
+        for (int i = 0; i < 2; i++) {
+            for (int j = 0; j < 2; j++) {
+                keyMatrix[i][j] = scanner.nextInt();
+            }
+        }
+        // Calculate the determinant of the key matrix
+        int determinant = keyMatrix[0][0] * keyMatrix[1][1] - keyMatrix[0][1] * keyMatrix[1][0];
+
+        // Calculate the modular multiplicative inverse of the determinant modulo 26
+        int determinantInverse = -1;
+        for (int i = 0; i < 26; i++) {
+            if ((determinant * i) % 26 == 1) {
+                determinantInverse = i;
+                break;
+            }
+        }
+        if (determinantInverse == -1) {
+            System.out.println("The key is not invertible. Decryption is not possible.");
+            return;
+        }
+
+        // Calculate the inverse of the key matrix
+        int[][] inverseKeyMatrix = {
+                {(keyMatrix[1][1] * determinantInverse) % 26, (-keyMatrix[0][1] * determinantInverse) % 26},
+                {(-keyMatrix[1][0] * determinantInverse) % 26, (keyMatrix[0][0] * determinantInverse) % 26}
+        };
+
+        System.out.println("Enter the ciphertext (in letters):");
+        scanner.nextLine(); // Consume newline
+        String ciphertext = scanner.nextLine().toUpperCase(); // Convert to uppercase
+
+        // Decrypt the ciphertext
+        StringBuilder decryptedText;
+        decryptedText = new StringBuilder();
+        for (int i = 0; i < ciphertext.length(); i += 2) {
+            int char1 = ciphertext.charAt(i) - 'A';
+            int char2 = ciphertext.charAt(i + 1) - 'A';
+
+            // Calculate the decrypted characters
+            int decChar1 = (inverseKeyMatrix[0][0] * char1 + inverseKeyMatrix[0][1] * char2) % 26;
+            int decChar2 = (inverseKeyMatrix[1][0] * char1 + inverseKeyMatrix[1][1] * char2) % 26;
+
+            decryptedText.append((char) (decChar1 + 'A'));
+            decryptedText.append((char) (decChar2 + 'A'));
+        }
+
+        // Display the decrypted plaintext
+        System.out.println("Decrypted Text: " + decryptedText.toString());
+
+        scanner.close();
+    }
+}

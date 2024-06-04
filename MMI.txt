@@ -1,0 +1,100 @@
+MMI
+
+import java.util.Scanner;
+
+public class Question3i{
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        int[][] matrix = new int[2][2];
+
+        System.out.println("Enter the elements of the 2x2 matrix:");
+        for (int i = 0; i < 2; i++) {
+            for (int j = 0; j < 2; j++) {
+                System.out.print("Enter element at position (" + (i + 1) + "," + (j + 1) + "): ");
+                matrix[i][j] = scanner.nextInt();
+            }
+        }
+
+        System.out.print("Enter the modulus: ");
+        int modulus = scanner.nextInt();
+
+        scanner.close();
+
+        int det = (((matrix[0][0] * matrix[1][1]) - (matrix[0][1] * matrix[1][0])) % modulus);
+        System.out.println("The Determinant Of The Above Matrix Is: " + det);
+        det = (det + modulus) % modulus;
+
+        // Check if the matrix is invertible (determinant is not zero)
+        if (det != 0) {
+            // Check if the gcd of det and modulus is 1
+            if (findGCD(det, modulus) == 1) {
+                System.out.println("Modular multiplicative inverse for this matrix is possible");
+
+                // Calculate the modular multiplicative inverse of the determinant
+                int detInverse = modInverse(det, modulus);
+
+                // Calculate the matrix of cofactors
+                int[][] cofactors = new int[2][2];
+                cofactors[0][0] = matrix[1][1];
+                cofactors[0][1] = (modulus - matrix[0][1]) % modulus;
+                cofactors[1][0] = (modulus - matrix[1][0]) % modulus;
+                cofactors[1][1] = matrix[0][0];
+
+                // Multiply each element by the modular multiplicative inverse of the determinant
+                int[][] inverseMatrix = new int[2][2];
+                for (int i = 0; i < 2; i++) {
+                    for (int j = 0; j < 2; j++) {
+                        inverseMatrix[i][j] = (cofactors[i][j] * detInverse) % modulus;
+                    }
+                }
+                // Display the modular inverse matrix
+                System.out.println("Modular Inverse Matrix:");
+                for (int i = 0; i < 2; i++) {
+                    for (int j = 0; j < 2; j++) {
+                        System.out.print(inverseMatrix[i][j] + " ");
+                    }
+                    System.out.println(); // Move to the next row after printing each row
+                }
+            }
+            else {
+                System.out.println("Modular multiplicative inverse for this matrix is not possible as gcd is not equal to 1");
+            }
+        }
+        else {
+            System.out.println("The matrix is not invertible (determinant is zero).");
+        }
+    }
+    // Function to find the GCD using the Euclidean algorithm
+    private static int findGCD(int a, int b) {
+        while (b != 0) {
+            int temp = b;
+            b = a % b;
+            a = temp;
+        }
+        return Math.abs(a); // GCD is always non-negative
+    }
+    // Function to calculate the modular multiplicative inverse using extended Euclidean algorithm
+    private static int modInverse(int a, int m) {
+        int m0 = m;
+        int y = 0, x = 1;
+
+        if (m == 1) {
+            return 0;
+        }
+        while (a > 1) {
+            int q = a / m;
+            int t = m;
+
+            m = a % m;
+            a = t;
+            t = y;
+
+            y = x - q * y;
+            x = t;
+        }
+        if (x < 0) {
+            x += m0;
+        }
+        return x;
+    }
+}

@@ -1,0 +1,56 @@
+Diffie Hellman Key Exchange
+
+import java.util.Scanner;
+
+public class DiffieHellman {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        // User inputs prime number p
+        System.out.print("Enter prime number p: ");
+        long p = Long.parseLong(scanner.nextLine());
+
+        // User inputs primitive root g
+        System.out.print("Enter primitive root g: ");
+        long g = Long.parseLong(scanner.nextLine());
+
+        // Generate private key for Alice
+        System.out.print("Enter private key for Alice: ");
+        long privateKeyAlice = Long.parseLong(scanner.nextLine());
+
+        // Generate private key for Bob
+        System.out.print("Enter private key for Bob: ");
+        long privateKeyBob = Long.parseLong(scanner.nextLine());
+
+        // Calculate public keys for Alice and Bob
+        long publicKeyAlice = modPow(g, privateKeyAlice, p);
+        long publicKeyBob = modPow(g, privateKeyBob, p);
+
+        // Simulate exchange of public keys
+
+        // Calculate shared secret for Alice
+        long sharedSecretAlice = modPow(publicKeyBob, privateKeyAlice, p);
+
+        // Calculate shared secret for Bob
+        long sharedSecretBob = modPow(publicKeyAlice, privateKeyBob, p);
+
+        // Output shared secrets
+        System.out.println("Shared secret Key (Alice): " + sharedSecretAlice);
+        System.out.println("Shared secret Key (Bob): " + sharedSecretBob);
+    }
+
+    // Method to calculate modular exponentiation (a^b mod n)
+    private static long modPow(long a, long b, long n) {
+        long result = 1;
+        a = a % n;
+        while (b > 0) {
+            if (b % 2 == 1) {
+                result = (result * a) % n;
+            }
+            a = (a * a) % n;
+            b /= 2;
+        }
+        return result;
+    }
+}

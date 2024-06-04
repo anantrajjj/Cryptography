@@ -1,0 +1,78 @@
+Chinese Remainder Theorem
+
+import java.util.Scanner;
+
+public class ChineseRemainderTheorem {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("Enter the number of equations: ");
+        int numEquations = scanner.nextInt();
+
+        int[] a = new int[numEquations]; // Remainders
+        int[] n = new int[numEquations]; // Moduli
+
+        System.out.println("Enter the equations in the form of 'a1 n1' 'a2 n2' ... 'an nn' " +
+                "where ai is the remainder and ni is the modulus:");
+
+        // Inputting equations
+        for (int i = 0; i < numEquations; i++) {
+            a[i] = scanner.nextInt();
+            n[i] = scanner.nextInt();
+        }
+
+        // Calculate the product of all moduli
+        int N = 1;
+        for (int i = 0; i < numEquations; i++) {
+            N *= n[i];
+        }
+        System.out.println("The Product of modulus is " + N);
+        // Calculate the solution
+        int x = 0;
+        for (int i = 0; i < numEquations; i++) {
+            int Ni = N / n[i];
+            int Ni_inverse = modInverse(Ni, n[i]);
+            x += a[i] * Ni * Ni_inverse;
+        }
+
+        // Ensure x is in the range [0, N)
+        x = x % N;
+        if (x < 0) {
+            x += N;
+        }
+        System.out.println("The solution to the system of congruences is: " + x);
+
+        scanner.close();
+    }
+    // Function to find modular inverse using Extended Euclidean Algorithm
+    public static int modInverse(int a, int m) {
+        int m0 = m;
+        int y = 0, x = 1;
+
+        if (m == 1)
+            return 0;
+
+        while (a > 1) {
+            // q is quotient
+            int q = a / m;
+
+            int t = m;
+
+            // m is remainder now, process same as Euclid's algo
+            m = a % m;
+            a = t;
+            t = y;
+
+            // Update x and y
+            y = x - q * y;
+            x = t;
+        }
+
+        // Make x positive
+        if (x < 0)
+            x += m0;
+
+        return x;
+    }
+}

@@ -1,0 +1,43 @@
+Polynomial Addition
+
+import java.util.Arrays;
+public class Question1 {
+    public static int[] addAndModPoly(int[] poly1, int[] poly2, int[] modPoly) {
+        int[] sumPoly = new int[Math.max(poly1.length, poly2.length)];
+        // Add polynomials
+        for (int i = 0; i < poly1.length; i++) {
+            sumPoly[i] += poly1[i];
+        }
+        for (int i = 0; i < poly2.length; i++) {
+            sumPoly[i] += poly2[i];
+        }
+        // Perform modulo operation
+        for (int i = 0; i < sumPoly.length; i++) {
+            sumPoly[i] %= 2; // Since it's a binary field, mod 2 keeps only the least significant bit
+        }
+
+        // Reduce the result modulo the given polynomial
+        while (degree(sumPoly) >= degree(modPoly)) {
+            int shift = degree(sumPoly) - degree(modPoly);
+            for (int i = 0; i < modPoly.length; i++) {
+                sumPoly[i + shift] ^= modPoly[i];
+            }
+        }
+        return sumPoly;
+    }
+    public static int degree(int[] poly) {
+        for (int i = poly.length - 1; i >= 0; i--) {
+            if (poly[i] != 0) {
+                return i;
+            }
+        }
+        return -1;
+    }
+    public static void main(String[] args) {
+        int[] poly1 = {1, 0, 1, 1, 0, 1, 0, 0, 1};
+        int[] poly2 = {0, 1, 1, 1, 0, 1, 1, 0, 0};
+        int[] modPoly = {1, 1, 0, 0, 0, 1, 1, 0, 1};
+        int[] result = addAndModPoly(poly1, poly2, modPoly);
+        System.out.println("Result: " + Arrays.toString(result));
+    }
+}

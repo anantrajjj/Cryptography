@@ -1,0 +1,149 @@
+Polynomial MMI
+
+import java.util.Arrays;
+
+public class Question4 {
+
+    public static int[] modMultiInv(int[] arr1, int[] modArr) {
+        int[] arr1Inv = new int[arr1.length];
+        for (int i = 0; i < arr1.length; i++) {
+            arr1Inv[i] = arr1[arr1.length - 1 - i];
+        }
+
+        int[] modArrInv = new int[modArr.length];
+        for (int i = 0; i < modArr.length; i++) {
+            modArrInv[i] = modArr[modArr.length - 1 - i];
+        }
+
+        int[] modArr1 = Arrays.copyOf(modArrInv, modArrInv.length);
+
+        int[] r1Arr = Arrays.copyOf(modArrInv, modArrInv.length);
+        int[] r2Arr = Arrays.copyOf(arr1Inv, arr1Inv.length);
+        int[] t1Arr = new int[Math.max(arr1.length, modArr.length)];
+        int[] t2Arr = new int[Math.max(arr1.length, modArr.length)];
+        t2Arr[t2Arr.length - 1] = 1;
+
+        while (degree(r2Arr) >= 0) {
+            int[] qArr = polyDiv(r1Arr, r2Arr);
+            int[] tArr = addPolys(t1Arr, polyMult(t2Arr, qArr, modArr1), modArr1);
+
+            int[] temp = r2Arr.clone();
+            r2Arr = polyMult(qArr, r2Arr, modArr1);
+            r2Arr = subtractPolys(r1Arr, r2Arr, modArr1);
+            r1Arr = temp;
+
+            t1Arr = t2Arr.clone();
+            t2Arr = tArr.clone();
+        }
+
+        return t1Arr;
+    }
+
+    public static int[] polyMult(int[] poly1, int[] poly2, int[] modPoly) {
+        int m = poly1.length;
+        int n = poly2.length;
+        int degreeResult = m + n - 2;
+        int[] result = new int[degreeResult + 1];
+
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                result[i + j] ^= poly1[i] * poly2[j];
+            }
+        }
+
+        while (degree(result) >= degree(modPoly)) {
+            int shift = degree(result) - degree(modPoly);
+            for (int i = 0; i < modPoly.length; i++) {
+                result[i + shift] ^= modPoly[i];
+            }
+        }
+
+        return result;
+    }
+
+    public static int[] addPolys(int[] poly1, int[] poly2, int[] modPoly) {
+        int maxLength = Math.max(poly1.length, poly2.length);
+        int[] sumPoly = new int[maxLength];
+
+        for (int i = 0; i < poly1.length; i++) {
+            sumPoly[i] += poly1[i];
+        }
+        for (int i = 0; i < poly2.length; i++) {
+            sumPoly[i] += poly2[i];
+        }
+
+        for (int i = 0; i < maxLength; i++) {
+            sumPoly[i] %= 2;
+        }
+
+        while (degree(sumPoly) >= degree(modPoly)) {
+            int shift = degree(sumPoly) - degree(modPoly);
+            for (int i = 0; i < modPoly.length; i++) {
+                sumPoly[i + shift] ^= modPoly[i];
+            }
+        }
+
+        return sumPoly;
+    }
+
+    public static int[] polyDiv(int[] dividend, int[] divisor) {
+        int[] quotient = new int[dividend.length];
+        int[] tempDividend = Arrays.copyOf(dividend, dividend.length);
+
+        while (degree(tempDividend) >= degree(divisor)) {
+            int degreeDiff = degree(tempDividend) - degree(divisor);
+            int[] temp = new int[degreeDiff + 1];
+            temp[degreeDiff] = 1;
+
+            int[] divisorShifted = polyMult(divisor, temp, divisor);
+            for (int i = 0; i < dividend.length; i++) {
+                tempDividend[i] ^= divisorShifted[i];
+            }
+            quotient[degreeDiff] = 1;
+        }
+
+        return quotient;
+    }
+
+    public static int degree(int[] poly) {
+        for (int i = poly.length - 1; i >= 0; i--) {
+            if (poly[i] != 0) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public static int[] subtractPolys(int[] poly1, int[] poly2, int[] modPoly) {
+        int maxLength = Math.max(poly1.length, poly2.length);
+        int[] diffPoly = new int[maxLength];
+
+        for (int i = 0; i < poly1.length; i++) {
+            diffPoly[i] += poly1[i];
+        }
+        for (int i = 0; i < poly2.length; i++) {
+            diffPoly[i] -= poly2[i];
+        }
+
+        for (int i = 0; i < maxLength; i++) {
+            diffPoly[i] %= 2;
+        }
+
+        while (degree(diffPoly) >= degree(modPoly)) {
+            int shift = degree(diffPoly) - degree(modPoly);
+            for (int i = 0; i < modPoly.length; i++) {
+                diffPoly[i + shift] ^= modPoly[i];
+            }
+        }
+
+        return diffPoly;
+    }
+
+    public static void main(String[] args) {
+        int[] modArr = {1, 1, 0, 0, 0, 1, 1, 0, 1}; // 1 + x + x^5 + x^6 + x^8
+        int[] arr1 = {1, 1, 0, 0, 1, 1, 1, 0, 0};   // 1 + x + x^4 + x^5 + x^6
+
+        System.out.println("The result of arr1 % modArr is:");
+        System.out.println(Arrays.toString(modMultiInv(arr1, modArr)));
+    }
+}

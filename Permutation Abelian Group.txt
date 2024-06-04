@@ -1,0 +1,71 @@
+Permutation Abelian Group
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+public class AbelianGroup {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Enter the value of n: ");
+        int n = scanner.nextInt();
+        List<List<List<Integer>>> permutationTable = generatePermutationTable(n);
+
+        System.out.println("Permutation table along with the result if it's Abelian or not:");
+        for (List<List<Integer>> row : permutationTable) {
+            System.out.println(row);
+        }
+        if (isAbelianGroup(permutationTable)) {
+            System.out.println("The given permutation group is Abelian");
+        } else {
+            System.out.println("The given permutation group is not Abelian");
+        }
+    }
+    public static List<List<List<Integer>>> generatePermutationTable(int n) {
+        List<List<List<Integer>>> table = new ArrayList<>();
+        List<List<Integer>> permutations = new ArrayList<>();
+
+        generatePermutations(new ArrayList<>(), n, permutations);
+        for (List<Integer> perm1 : permutations) {
+            List<List<Integer>> row = new ArrayList<>();
+            for (List<Integer> perm2 : permutations) {
+                row.add(composePermutationGroups(perm1, perm2));
+            }
+            table.add(row);
+        }
+        return table;
+    }
+    public static void generatePermutations(List<Integer> perm, int n, List<List<Integer>> result) {
+        if (perm.size() == n) {
+            result.add(new ArrayList<>(perm));
+            return;
+        }
+        for (int i = 1; i <= n; i++) {
+            if (!perm.contains(i)) {
+                perm.add(i);
+                generatePermutations(perm, n, result);
+                perm.remove(perm.size() - 1);
+            }
+        }
+    }
+    public static List<Integer> composePermutationGroups(List<Integer> a, List<Integer> b) {
+        List<Integer> composedPerm = new ArrayList<>();
+        for (int i = 0; i < a.size(); i++) {
+            composedPerm.add(b.get(a.get(i) - 1));
+        }
+        return composedPerm;
+    }
+    public static boolean isAbelianGroup(List<List<List<Integer>>> table) {
+        int n = table.size();
+
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (!table.get(i).get(j).equals(table.get(j).get(i))) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+}

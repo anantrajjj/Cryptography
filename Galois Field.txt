@@ -1,0 +1,66 @@
+Galois Field
+
+import java.util.Scanner;
+
+public class GF {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("Enter the value of p (a prime number):");
+        int p = scanner.nextInt();
+
+        int n = (int) Math.pow(2, p);
+        String[] polynomialForms = new String[n];
+
+        // Generate polynomial representations for each element
+        for (int i = 0; i < n; i++) {
+            polynomialForms[i] = convertToPolynomial(i, p);
+        }
+
+        // Calculate the maximum length of polynomial
+        int maxPolynomialLength = polynomialForms[n - 1].length();
+
+        // Print the Multiplicative Table
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                String result = polynomialMultiplication(i, j, polynomialForms, p);
+                System.out.print(String.format("%-" + maxPolynomialLength + "s", result) + "\t");
+            }
+            System.out.println();
+        }
+
+        scanner.close();
+    }
+
+    // Function to convert a number to polynomial form
+    public static String convertToPolynomial(int number, int p) {
+        StringBuilder polynomial = new StringBuilder();
+        if (number == 0) {
+            return "0";
+        }
+        for (int i = p - 1; i >= 0; i--) {
+            if (((number >> i) & 1) == 1) {
+                if (polynomial.length() > 0) {
+                    polynomial.append(" + ");
+                }
+                if (i == 0) {
+                    polynomial.append("1");
+                } else if (i == 1) {
+                    polynomial.append("x");
+                } else {
+                    polynomial.append("x^").append(i);
+                }
+            }
+        }
+        return polynomial.toString();
+    }
+
+    // Function to multiply polynomials in GF(2^p)
+    public static String polynomialMultiplication(int a, int b, String[] polynomialForms, int p) {
+        if (a == 0 || b == 0) {
+            return "0";
+        }
+        int result = (a + b) % polynomialForms.length;
+        return polynomialForms[result];
+    }
+}

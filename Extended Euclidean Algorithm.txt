@@ -1,0 +1,45 @@
+Extended Euclidean Algorithm
+
+import java.util.Scanner;
+class Question3 {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Enter the number (r1): ");
+        int r1 = scanner.nextInt();
+
+        System.out.print("Enter the modulus (r2): ");
+        int r2 = scanner.nextInt();
+
+        int result = MultiplicativeInverse(r1, r2);
+        if (result == -1) {
+            System.out.println("The multiplicative inverse does not exist.");
+        }
+        else {
+            System.out.println("The modular multiplicative inverse of " + r1 + " modulo " + r2 + " is: " + result);
+        }
+    }
+
+    // Function to find multiplicative modular inverse using Extended Euclidean Algorithm
+    public static int MultiplicativeInverse(int r1, int r2) {
+        int m0 = r2;
+        int t0 = 0, t1 = 1;
+        if (r2 == 1) {
+            return 0;
+        }
+        while (r1 > 1) {
+            int q = r1 / r2;
+            int t = r2;
+
+            r2 = r1 % r2;
+            r1 = t;
+            t = t0;
+
+            t0 = t1 - q * t0;
+            t1 = t;
+        }
+        if (t1 < 0) {
+            t1 += m0;
+        }
+        return t1;
+    }
+}

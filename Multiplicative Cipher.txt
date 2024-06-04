@@ -1,0 +1,78 @@
+Multiplicative Cipher
+
+import java.util.Scanner;
+public class MultiplicativeCipher {
+    // Function to encrypt text using the multiplicative cipher
+    public static String encrypt(String text, int key) {
+        String encryptedText = "";
+
+        for (int i = 0; i < text.length(); i++) {
+            char ch = text.charAt(i);
+            if (Character.isUpperCase(ch)) {
+                char encryptedChar = (char) ((ch - 'A') * key % 26 + 'A');
+                encryptedText += encryptedChar;
+            } else if (Character.isLowerCase(ch)) {
+                char encryptedChar = (char) ((ch - 'a') * key % 26 + 'a');
+                encryptedText += encryptedChar;
+            } else {
+                encryptedText += ch;
+            }
+        }
+        return encryptedText;
+    }
+    // Function to decrypt text using the multiplicative cipher
+    public static String decrypt(String text, int key) {
+        String decryptedText = "";
+        int inverseKey = -1;
+        for (int i = 1; i < 26; i++) {
+            if ((key * i) % 26 == 1) {
+                inverseKey = i;
+                break;
+            }
+        }
+        if (inverseKey == -1) {
+            return "Decryption key does not exist for the given encryption key!";
+        }
+        for (int i = 0; i < text.length(); i++) {
+            char ch = text.charAt(i);
+            if (Character.isUpperCase(ch)) {
+                char decryptedChar = (char) (((ch - 'A') * inverseKey) % 26 + 'A');
+                if (decryptedChar < 'A') {
+                    decryptedChar += 26;
+                }
+                decryptedText += decryptedChar;
+            } else if (Character.isLowerCase(ch)) {
+                char decryptedChar = (char) (((ch - 'a') * inverseKey) % 26 + 'a');
+                if (decryptedChar < 'a') {
+                    decryptedChar += 26;
+                }
+                decryptedText += decryptedChar;
+            } else {
+                decryptedText += ch;
+            }
+        }
+        return decryptedText;
+    }
+    // Main method to demonstrate the multiplicative cipher
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Enter the text to encrypt: ");
+        String text = scanner.nextLine();
+
+        System.out.print("Enter the encryption key: ");
+        int encryptionKey = scanner.nextInt();
+
+        // Encrypt the text
+        String encryptedText = encrypt(text, encryptionKey);
+        System.out.println("Encrypted Text: " + encryptedText);
+
+        // Decrypt the text
+        System.out.print("Enter the decryption key: ");
+        int decryptionKey = scanner.nextInt();
+        String decryptedText = decrypt(encryptedText, decryptionKey);
+        System.out.println("Decrypted Text: " + decryptedText);
+
+        scanner.close();
+    }
+}

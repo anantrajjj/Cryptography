@@ -1,0 +1,52 @@
+RSA
+
+import java.util.Scanner;
+
+public class RSAAlgorithm {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("Enter two prime numbers (p and q):");
+        long p = scanner.nextLong();
+        long q = scanner.nextLong();
+
+        long n = p * q;
+
+        System.out.println("Public Key (e): 13");
+        System.out.println("Modulus (n): " + n);
+
+        System.out.println("Enter message to encrypt:");
+        scanner.nextLine(); // Consume newline
+        String message = scanner.nextLine();
+
+        // Convert the message to an integer
+        int messageInt = Integer.parseInt(message);
+
+        // Encrypt the message using RSA
+        long encrypted = modPow(messageInt, 13, n);
+        System.out.println("Encrypted message: " + encrypted);
+
+        System.out.println("Enter private key (d):");
+        long d = scanner.nextLong();
+
+        // Decrypt the message using RSA
+        long decrypted = modPow(encrypted, d, n);
+        System.out.println("Decrypted message: " + decrypted);
+
+        scanner.close();
+    }
+
+    public static long modPow(long base, long exponent, long modulus) {
+        long result = 1;
+        base = base % modulus;
+        while (exponent > 0) {
+            if (exponent % 2 == 1) {
+                result = (result * base) % modulus;
+            }
+            exponent = exponent >> 1;
+            base = (base * base) % modulus;
+        }
+        return result;
+    }
+}

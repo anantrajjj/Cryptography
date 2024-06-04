@@ -1,0 +1,87 @@
+Transposition Cipher
+
+import java.util.Scanner;
+
+public class TranspositionCipher {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("Enter the key:");
+        String key = scanner.nextLine().toUpperCase();
+
+        System.out.println("Enter the plaintext:");
+        String plaintext = scanner.nextLine().toUpperCase();
+
+        // Encryption
+        String ciphertext = encrypt(plaintext, key);
+        System.out.println("Encrypted text: " + ciphertext);
+
+        // Decryption
+        String decryptedText = decrypt(ciphertext, key);
+        System.out.println("Decrypted text: " + decryptedText);
+    }
+
+    public static String encrypt(String plaintext, String key) {
+        int keyLength = key.length();
+        int textLength = plaintext.length();
+        int rows = textLength / keyLength + (textLength % keyLength == 0 ? 0 : 1);
+        char[][] grid = new char[rows][keyLength];
+
+        // Fill the grid with the plaintext characters
+        int counter = 0;
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < keyLength && counter < textLength; j++) {
+                grid[i][j] = plaintext.charAt(counter++);
+            }
+        }
+
+        // Encrypt based on the key
+        String ciphertext = "";
+        for (int col = 0; col < keyLength; col++) {
+            int index = key.indexOf(key.charAt(col));
+            for (int row = 0; row < rows; row++) {
+                if (grid[row][index] != 0) {
+                    ciphertext += grid[row][index];
+                }
+            }
+        }
+
+        return ciphertext;
+    }
+
+    public static String decrypt(String ciphertext, String key) {
+        int keyLength = key.length();
+        int textLength = ciphertext.length();
+        int rows = textLength / keyLength + (textLength % keyLength == 0 ? 0 : 1);
+        char[][] grid = new char[rows][keyLength];
+
+        // Determine the number of characters in the last row
+        int charsInLastRow = textLength % keyLength;
+
+        // Fill the grid with the ciphertext characters
+        int counter = 0;
+        for (int col = 0; col < keyLength; col++) {
+            int index = key.indexOf(key.charAt(col));
+            int row = charsInLastRow > 0 ? rows - 1 : rows - 2;
+            for (int i = 0; i < row && counter < textLength; i++) {
+                grid[i][index] = ciphertext.charAt(counter++);
+            }
+            if (charsInLastRow > 0) {
+                grid[rows - 1][index] = ciphertext.charAt(counter++);
+                charsInLastRow--;
+            }
+        }
+
+        // Decrypt
+        String decryptedText = "";
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < keyLength; j++) {
+                if (grid[i][j] != 0) {
+                    decryptedText += grid[i][j];
+                }
+            }
+        }
+
+        return decryptedText;
+    }
+}

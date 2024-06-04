@@ -1,0 +1,69 @@
+ElGamal Cyptosystem
+
+import java.math.BigInteger;
+import java.util.Scanner;
+
+public class ElGamal {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Enter the prime number (p): ");
+        BigInteger p = scanner.nextBigInteger();
+
+        System.out.print("Enter the generator of p (e1): ");
+        BigInteger e1 = scanner.nextBigInteger();
+
+        System.out.print("Enter the private key of receiver (d): ");
+        BigInteger d = scanner.nextBigInteger();
+
+        System.out.print("Enter the random number (r): ");
+        BigInteger r = scanner.nextBigInteger();
+
+        System.out.print("Enter the message (M): ");
+        BigInteger M = scanner.nextBigInteger();
+
+        ElGamalKey publicKey = new ElGamalKey(p, e1, e1.modPow(d, p));
+        ElGamalCipher cipher = encrypt(M, publicKey, r);
+        System.out.println("Encrypted message: (" + cipher.a + ", " + cipher.b + ")");
+
+        BigInteger decryptedMessage = decrypt(cipher, d, p);
+        System.out.println("Decrypted message: " + decryptedMessage);
+
+        scanner.close();
+    }
+    public static ElGamalCipher encrypt(BigInteger M, ElGamalKey publicKey, BigInteger r) {
+        BigInteger a = publicKey.e1.modPow(r, publicKey.p);
+        BigInteger b = M.multiply(publicKey.e2.modPow(r, publicKey.p)).mod(publicKey.p);
+        return new ElGamalCipher(a, b);
+    }
+
+    public static BigInteger decrypt(ElGamalCipher cipher, BigInteger d, BigInteger p) {
+        BigInteger a = cipher.a;
+        BigInteger b = cipher.b;
+        BigInteger decryptionKey = a.modPow(d, p).modInverse(p);
+        return b.multiply(decryptionKey).mod(p);
+    }
+}
+
+class ElGamalKey {
+    public final BigInteger p;
+    public final BigInteger e1;
+    public final BigInteger e2;
+
+    public ElGamalKey(BigInteger p, BigInteger e1, BigInteger e2) {
+        this.p = p;
+        this.e1 = e1;
+        this.e2 = e2;
+    }
+}
+
+class ElGamalCipher {
+    public final BigInteger a;
+    public final BigInteger b;
+
+    public ElGamalCipher(BigInteger a, BigInteger b) {
+        this.a = a;
+        this.b = b;
+    }
+}
